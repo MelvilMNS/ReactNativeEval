@@ -13,6 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Feather from "@expo/vector-icons/Feather";
+import * as Location from 'expo-location';
 
 type Obstacle = {
   id: string;
@@ -106,13 +107,31 @@ export default function App() {
   };
 
   // Ouvrir le formulaire pour ajouter
-  const openAddModal = () => {
-    setCurrentObstacle(null);
-    setDescription("");
+  const openAddModal = async () => {
+  setCurrentObstacle(null);
+  setDescription("");
+  
+  try {
+    // Demander la permission
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert("Permission refusée", "Impossible d'accéder à la localisation");
+      setLongitude("");
+      setLattitude("");
+    } else {
+      // Récupérer la position
+      let location = await Location.getCurrentPositionAsync({});
+      setLongitude(location.coords.longitude.toString());
+      setLattitude(location.coords.latitude.toString());
+    }
+  } catch (error) {
+    console.error(error);
     setLongitude("");
     setLattitude("");
-    setModalVisible(true);
-  };
+  }
+
+  setModalVisible(true);
+};
 
   // Ouvrir le formulaire pour éditer
   const openEditModal = (obstacle: Obstacle) => {

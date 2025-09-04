@@ -1,75 +1,89 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+type Contact = {
+  id: string;
+  name: string;
+  phone: string;
+  mail: string;
+};
 
-export default function HomeScreen() {
+export default function App() {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+
+  const defaultContacts: Contact[] = [
+    { id: "1", name: "Alice Dupont", phone: "06 12 34 56 78", mail: "alice.dupont@gmail.com"},
+    { id: "2", name: "Jean Martin", phone: "07 87 65 43 21", mail: "jean.martin@gmail.com" },
+    { id: "3", name: "Sophie Bernard", phone: "06 98 76 54 32", mail: "sophie.bernard@gmail.com" },
+  ];
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("contacts");
+        if (stored) {
+          setContacts(JSON.parse(stored));
+        } else {
+          await AsyncStorage.setItem("contacts", JSON.stringify(defaultContacts));
+          setContacts(defaultContacts);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const deleteContacts = async () => {
+      try {
+        await AsyncStorage.removeItem('contacts');
+      } catch (error) {
+        console.log('Error removing contacts key:', error);
+      }
+    };
+
+    const initializeContacts = async () => {
+      await deleteContacts();
+      await loadContacts();
+    };
+
+    initializeContacts();
+  }, []);
+
+  const renderItem = ({ item }: { item: Contact }) => (
+    <View style={styles.card}>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.phone}>{item.phone}</Text>
+      <Text style={styles.mail}>{item.mail}</Text>
+    </View>
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>📇 Mes Contacts</Text>
+      <FlatList
+        data={contacts}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 15 },
+  card: {
+    backgroundColor: "#fff",
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  name: { fontSize: 18, fontWeight: "600" },
+  phone: { fontSize: 16, color: "#555" },
+  mail: { fontSize: 16, color: "#555" },
 });

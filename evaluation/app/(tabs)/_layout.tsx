@@ -28,19 +28,20 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
-        name="contacts"
-        options={{
-          title: 'Contacts',
-          tabBarIcon: ({ color }) => <Feather name="phone" size={28} color="white" />,
-        }}
-      />
-      <Tabs.Screen
         name="obstacles"
         options={{
           title: 'Obstacles',
           tabBarIcon: ({ color }) => <MaterialIcons name="report-problem" size={28} color="white" />,
         }}
       />
+      <Tabs.Screen
+        name="contacts"
+        options={{
+          title: 'Contacts',
+          tabBarIcon: ({ color }) => <Feather name="phone" size={28} color="white" />,
+        }}
+      />
+      
     </Tabs>
   );
 }

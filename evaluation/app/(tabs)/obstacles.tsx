@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Button,
+  Linking
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -142,6 +143,17 @@ export default function App() {
     setModalVisible(true);
   };
 
+  const openInMaps = (latitude: string, longitude: string) => {
+  const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+  Linking.canOpenURL(url).then((supported) => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert("Erreur", "Impossible d'ouvrir Google Maps");
+    }
+  });
+};
+
   const renderItem = ({ item }: { item: Obstacle }) => (
     <View style={styles.card}>
       <View style={{ flex: 1 }}>
@@ -150,6 +162,9 @@ export default function App() {
         <Text style={styles.coords}>Lattitude: {item.lattitude}</Text>
       </View>
       <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity onPress={() => openInMaps(item.lattitude, item.longitude)} style={{ marginRight: 10 }}>
+          <Feather name="map-pin" size={24} color="green" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => openEditModal(item)} style={{ marginRight: 10 }}>
           <Feather name="edit-3" size={24} color="blue" />
         </TouchableOpacity>

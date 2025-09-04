@@ -3,6 +3,7 @@ import {
   View, Text, FlatList, StyleSheet, TouchableOpacity, Alert 
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from "@expo/vector-icons/Feather";
 
 type Obstacle = {
@@ -89,7 +90,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mes Obstacles</Text>
+      <View style={styles.titleContainer}>
+        <MaterialIcons name="report-problem" size={24} color="black" />
+        <Text style={styles.title}>Liste des obstacles</Text>
+      </View>
       {obstacles.length === 0 ? (
         <Text>Aucun obstacle enregistré.</Text>
       ) : (
@@ -110,7 +114,14 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 15 },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22, fontWeight: "bold",
+    marginLeft: 5,
+  },
   card: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Feather from '@expo/vector-icons/Feather';
 
 type Contact = {
   id: string;
@@ -59,7 +60,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📇 Mes Contacts</Text>
+      <Text style={styles.title}><Feather name="phone" size={24} color="black" /> Mes Contacts</Text>
       <FlatList
         data={contacts}
         renderItem={renderItem}
